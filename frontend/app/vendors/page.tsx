@@ -1,10 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api, type Vendor } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-
-interface Vendor { id: number; name: string; upi_id: string; bank_account: string; ifsc: string; is_active: boolean; }
 
 export default function VendorsPage() {
   const { user, ready } = useAuth();
@@ -47,8 +45,6 @@ export default function VendorsPage() {
 
   return (
     <div className="space-y-6">
-
-      {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Vendors</h1>
@@ -57,86 +53,51 @@ export default function VendorsPage() {
         <span className="text-sm text-gray-400">{vendors.length} vendor{vendors.length !== 1 ? 's' : ''}</span>
       </div>
 
-      {/* Add Vendor Form */}
       <div className="bg-white border border-gray-200 rounded-xl p-6">
         <h2 className="text-base font-semibold text-gray-800 mb-4">Add New Vendor</h2>
         {formError && (
           <div className="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
-            <span className="mt-0.5">⚠</span>
-            <span>{formError}</span>
+            <span>⚠</span><span>{formError}</span>
           </div>
         )}
         {success && (
           <div className="mb-4 flex items-start gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">
-            <span className="mt-0.5">✓</span>
-            <span>{success}</span>
+            <span>✓</span><span>{success}</span>
           </div>
         )}
         <form onSubmit={handleAdd}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Vendor Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-                placeholder="e.g. Acme Corp"
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                required
-              />
+              <label className="block text-xs font-medium text-gray-600 mb-1">Vendor Name <span className="text-red-500">*</span></label>
+              <input className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g. Acme Corp" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">UPI ID</label>
-              <input
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-                placeholder="e.g. vendor@upi"
-                value={form.upi_id}
-                onChange={e => setForm(f => ({ ...f, upi_id: e.target.value }))}
-              />
+              <input className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g. vendor@upi" value={form.upi_id} onChange={e => setForm(f => ({ ...f, upi_id: e.target.value }))} />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Bank Account</label>
-              <input
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-                placeholder="Account number"
-                value={form.bank_account}
-                onChange={e => setForm(f => ({ ...f, bank_account: e.target.value }))}
-              />
+              <input className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Account number" value={form.bank_account} onChange={e => setForm(f => ({ ...f, bank_account: e.target.value }))} />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">IFSC Code</label>
-              <input
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-                placeholder="e.g. HDFC0001234"
-                value={form.ifsc}
-                onChange={e => setForm(f => ({ ...f, ifsc: e.target.value }))}
-              />
+              <input className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g. HDFC0001234" value={form.ifsc} onChange={e => setForm(f => ({ ...f, ifsc: e.target.value }))} />
             </div>
           </div>
-          <button
-            className="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors"
-            disabled={saving}
-          >
+          <button className="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors" disabled={saving}>
             {saving ? 'Adding…' : '+ Add Vendor'}
           </button>
         </form>
       </div>
 
-      {/* Vendor List */}
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-semibold text-gray-800">All Vendors</h2>
         </div>
-
         {loading ? (
-          <div className="px-6 py-12 text-center">
-            <div className="text-gray-400 text-sm">Loading vendors…</div>
-          </div>
+          <div className="px-6 py-12 text-center text-gray-400 text-sm">Loading vendors…</div>
         ) : error ? (
-          <div className="px-6 py-6">
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
-          </div>
+          <div className="px-6 py-6"><div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div></div>
         ) : vendors.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <div className="text-4xl mb-3">🏢</div>
@@ -170,9 +131,7 @@ export default function VendorsPage() {
                     <td className="px-6 py-4 text-gray-500 font-mono text-xs">{v.bank_account || <span className="text-gray-300 font-sans">—</span>}</td>
                     <td className="px-6 py-4 text-gray-500 font-mono text-xs">{v.ifsc || <span className="text-gray-300 font-sans">—</span>}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        v.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                      }`}>
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${v.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${v.is_active ? 'bg-green-500' : 'bg-gray-400'}`} />
                         {v.is_active ? 'Active' : 'Inactive'}
                       </span>

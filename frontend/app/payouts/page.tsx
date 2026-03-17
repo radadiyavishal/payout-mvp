@@ -2,11 +2,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api, type PayoutListItem, type Vendor } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-
-interface Payout { id: number; amount: string; mode: string; status: string; vendor: { id: number; name: string }; createdAt: string; }
-interface Vendor { id: number; name: string; }
 
 const STATUS_STYLES: Record<string, string> = {
   Draft:     'bg-gray-100 text-gray-600',
@@ -14,7 +11,6 @@ const STATUS_STYLES: Record<string, string> = {
   Approved:  'bg-green-100 text-green-700',
   Rejected:  'bg-red-100 text-red-700',
 };
-
 const STATUS_DOT: Record<string, string> = {
   Draft:     'bg-gray-400',
   Submitted: 'bg-yellow-500',
@@ -25,7 +21,7 @@ const STATUS_DOT: Record<string, string> = {
 export default function PayoutsPage() {
   const { user, ready } = useAuth();
   const router = useRouter();
-  const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [payouts, setPayouts] = useState<PayoutListItem[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -60,8 +56,6 @@ export default function PayoutsPage() {
 
   return (
     <div className="space-y-6">
-
-      {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Payouts</h1>
@@ -74,52 +68,35 @@ export default function PayoutsPage() {
           </p>
         </div>
         {user?.role === 'OPS' && (
-          <Link
-            href="/payouts/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
+          <Link href="/payouts/new" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
             + New Payout
           </Link>
         )}
       </div>
 
-      {/* Filters */}
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <form onSubmit={applyFilters} className="flex flex-wrap gap-3 items-end">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
-            <select
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={status}
-              onChange={e => setStatus(e.target.value)}
-            >
+            <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value={status} onChange={e => setStatus(e.target.value)}>
               <option value="">All Statuses</option>
               {['Draft', 'Submitted', 'Approved', 'Rejected'].map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Vendor</label>
-            <select
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={vendorId}
-              onChange={e => setVendorId(e.target.value)}
-            >
+            <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value={vendorId} onChange={e => setVendorId(e.target.value)}>
               <option value="">All Vendors</option>
               {vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
             </select>
           </div>
-          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-900 transition-colors">
-            Apply Filter
-          </button>
+          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-900 transition-colors">Apply Filter</button>
           {(status || vendorId) && (
-            <button type="button" onClick={clearFilters} className="text-sm text-gray-500 hover:text-gray-700 underline">
-              Clear
-            </button>
+            <button type="button" onClick={clearFilters} className="text-sm text-gray-500 hover:text-gray-700 underline">Clear</button>
           )}
         </form>
       </div>
 
-      {/* Table */}
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-800">All Payouts</h2>
@@ -175,10 +152,7 @@ export default function PayoutsPage() {
                       </td>
                       <td className="px-6 py-4 text-gray-400 text-xs">{new Date(p.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                       <td className="px-6 py-4">
-                        <Link
-                          href={`/payouts/${p.id}`}
-                          className={`text-xs font-medium hover:underline ${needsAction ? 'text-yellow-700 hover:text-yellow-900' : 'text-blue-600 hover:text-blue-800'}`}
-                        >
+                        <Link href={`/payouts/${p.id}`} className={`text-xs font-medium hover:underline ${needsAction ? 'text-yellow-700 hover:text-yellow-900' : 'text-blue-600 hover:text-blue-800'}`}>
                           {needsAction ? 'Review →' : 'View →'}
                         </Link>
                       </td>
