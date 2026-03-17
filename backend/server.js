@@ -8,6 +8,7 @@ require('./models/User');
 require('./models/Vendor');
 require('./models/Payout');
 require('./models/PayoutAudit');
+require('./seed.js');
 
 const app = express();
 app.use(cors());
