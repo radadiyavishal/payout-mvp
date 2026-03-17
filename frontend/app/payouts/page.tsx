@@ -90,10 +90,15 @@ export default function PayoutsPage() {
               {vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
             </select>
           </div>
-          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-900 transition-colors">Apply Filter</button>
-          {(status || vendorId) && (
-            <button type="button" onClick={clearFilters} className="text-sm text-gray-500 hover:text-gray-700 underline">Clear</button>
-          )}
+          <div className="flex gap-2">
+            <button className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-900 transition-colors">Apply</button>
+            <button
+              type="button"
+              onClick={clearFilters}
+              disabled={!status && !vendorId}
+              className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >Clear</button>
+          </div>
         </form>
       </div>
 

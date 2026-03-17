@@ -12,6 +12,17 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const ROLES = [
+    { label: 'OPS', email: 'ops@demo.com', password: 'ops123' },
+    { label: 'FINANCE', email: 'finance@demo.com', password: 'fin123' },
+  ];
+
+  const handleRoleSelect = (role: typeof ROLES[0]) => {
+    setEmail(role.email);
+    setPassword(role.password);
+    setError('');
+  };
+
   useEffect(() => {
     if (ready && user) router.replace('/payouts');
   }, [ready, user, router]);
@@ -54,6 +65,25 @@ export default function LoginPage() {
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Sign in as</label>
+              <div className="grid grid-cols-2 gap-2">
+                {ROLES.map(r => (
+                  <button
+                    key={r.label}
+                    type="button"
+                    onClick={() => handleRoleSelect(r)}
+                    className={`py-2 rounded-lg text-sm font-medium border transition-colors ${
+                      email === r.email
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400 hover:text-blue-600'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Email address</label>
               <input
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -84,26 +114,6 @@ export default function LoginPage() {
           </form>
         </div>
 
-        {/* Demo credentials */}
-        <div className="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Demo Credentials</p>
-          <div className="space-y-1.5">
-            {[
-              { email: 'ops@demo.com', pass: 'ops123', role: 'OPS', color: 'bg-blue-100 text-blue-700' },
-              { email: 'finance@demo.com', pass: 'fin123', role: 'FINANCE', color: 'bg-purple-100 text-purple-700' },
-            ].map(c => (
-              <button
-                key={c.role}
-                type="button"
-                onClick={() => { setEmail(c.email); setPassword(c.pass); }}
-                className="w-full flex items-center justify-between text-xs bg-white border border-gray-200 rounded-lg px-3 py-2 hover:border-blue-300 hover:bg-blue-50 transition-colors text-left"
-              >
-                <span className="text-gray-600">{c.email} / {c.pass}</span>
-                <span className={`px-1.5 py-0.5 rounded font-semibold ${c.color}`}>{c.role}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

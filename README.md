@@ -3,45 +3,89 @@
 Full-stack payout management system with role-based access control.
 
 ## Stack
-- **Backend**: Node.js, Express, Sequelize, PostgreSQL
-- **Frontend**: Next.js 15, TypeScript, Tailwind CSS
+- **Backend**: Node.js, Express, Sequelize, PostgreSQL (port 4000)
+- **Frontend**: Next.js 15, TypeScript, Tailwind CSS (port 3000)
 
-## Prerequisites
+---
+
+## ⚡ Run in 5 Minutes
+
+### Prerequisites
 - Node.js 18+
-- PostgreSQL running locally
+- PostgreSQL running locally (default: `localhost:5432`)
 
-## Setup
+---
 
-### 1. Database
-Create a PostgreSQL database:
+### Step 1 — Create the database
+
 ```sql
 CREATE DATABASE payout_mvp;
 ```
 
-### 2. Backend
+---
+
+### Step 2 — Configure environment
+
+Create `backend/.env` (or edit the existing one):
+
+```env
+PORT=4000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=payout_mvp
+DB_USER=postgres
+DB_PASS=your_postgres_password
+JWT_SECRET=any_random_secret_string
+```
+
+---
+
+### Step 3 — Backend
+
 ```bash
 cd backend
 npm install
-# Edit .env if your DB credentials differ from defaults (postgres/postgres)
-npm run seed     # creates tables + seeds users & vendors
-npm run dev      # starts on http://localhost:4000
+npm run seed   # creates tables + seeds users & vendors
+npm run dev    # starts on http://localhost:4000
 ```
 
-### 3. Frontend
+---
+
+### Step 4 — Frontend
+
 ```bash
 cd frontend
-npm install      # already done by scaffold
-npm run dev      # starts on http://localhost:3000
+npm install
+npm run dev    # starts on http://localhost:3000
 ```
 
-## Seeded Users
+Open **http://localhost:3000** — done.
+
+---
+
+## Seed Data
+
+`npm run seed` creates:
+
+**Users**
 | Email | Password | Role |
 |---|---|---|
 | ops@demo.com | ops123 | OPS |
 | finance@demo.com | fin123 | FINANCE |
 
+**Vendors** — 2 sample vendors pre-loaded.
+
+> On the login page, click **OPS** or **FINANCE** to auto-fill credentials.
+
+---
+
+## Role Rules
+- **OPS** — Create payouts (Draft), submit for review (Draft → Submitted)
+- **FINANCE** — Approve (Submitted → Approved) or reject with reason (Submitted → Rejected)
+- Status transitions are strictly enforced server-side
+
 ## API Endpoints
-| Method | Path | Role |
+| Method | Path | Auth |
 |---|---|---|
 | POST | /auth/login | Public |
 | GET | /vendors | Any |
@@ -52,8 +96,3 @@ npm run dev      # starts on http://localhost:3000
 | POST | /payouts/:id/submit | OPS |
 | POST | /payouts/:id/approve | FINANCE |
 | POST | /payouts/:id/reject | FINANCE |
-
-## Role Rules
-- **OPS**: Create payouts (Draft), submit (Draft → Submitted), view all
-- **FINANCE**: Approve (Submitted → Approved), reject with reason (Submitted → Rejected), view all
-- Status transitions are strictly enforced server-side
