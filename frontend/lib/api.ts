@@ -1,4 +1,5 @@
-const BASE = 'http://localhost:4000';
+// const BASE = 'http://localhost:4000';
+ const BASE = 'https://payout-backend-olen.onrender.com';
 
 function getToken() {
   return typeof window !== 'undefined' ? localStorage.getItem('token') : null;
