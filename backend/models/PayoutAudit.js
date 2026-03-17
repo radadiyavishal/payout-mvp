@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const User = require('./User');
-const Payout = require('./Payout');
 
 const PayoutAudit = sequelize.define('PayoutAudit', {
   payout_id: { type: DataTypes.INTEGER, allowNull: false },
